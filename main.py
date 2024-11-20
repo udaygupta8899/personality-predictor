@@ -98,7 +98,7 @@ if st.button("Predict Personality Type"):
     input_data = np.array([user_input])
     import pickle
     with open('model.joblib', 'rb') as model_file:
-    model = pickle.load(model_file)
+        model = pickle.load(model_file)
 
     predictions = model.predict(input_data)[0]  # Get probabilities
 
