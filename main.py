@@ -96,7 +96,10 @@ with st.expander("Click here to rate yourself on the scales:"):
 if st.button("Predict Personality Type"):
     # Load model and predict
     input_data = np.array([user_input])
-    model = joblib.load('model.joblib')
+    import pickle
+    with open('model.joblib', 'rb') as model_file:
+    model = pickle.load(model_file)
+
     predictions = model.predict(input_data)[0]  # Get probabilities
 
     predicted_class = np.argmax(predictions)
