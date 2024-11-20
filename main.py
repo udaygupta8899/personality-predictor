@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import pickle  # Using pickle for model loading
+import dill  # Use dill to load the model
 import plotly.graph_objects as go
 
 # Custom CSS for UI Enhancements
@@ -95,7 +95,7 @@ if st.button("Predict Personality Type"):
     # Load model and predict
     try:
         with open('model.joblib', 'rb') as model_file:
-            model = pickle.load(model_file)
+            model = dill.load(model_file)  # Use dill to load the model
         
         input_data = np.array([user_input])
         predictions = model.predict(input_data)[0]  # Get probabilities
