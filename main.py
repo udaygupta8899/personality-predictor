@@ -1,8 +1,10 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import dill  # Use dill to load the model
+import tensorflow as tf
+from sklearn.preprocessing import StandardScaler
 import plotly.graph_objects as go
+import joblib
 
 # Custom CSS for UI Enhancements
 st.markdown("""
@@ -93,46 +95,41 @@ with st.expander("Click here to rate yourself on the scales:"):
 # Predict Button
 if st.button("Predict Personality Type"):
     # Load model and predict
-    try:
-        with open('model.joblib', 'rb') as model_file:
-            model = dill.load(model_file)  # Use dill to load the model
-        
-        input_data = np.array([user_input])
-        predictions = model.predict(input_data)[0]  # Get probabilities
+    input_data = np.array([user_input])
+    model = joblib.load('model.joblib')
+    predictions = model.predict(input_data)[0]  # Get probabilities
 
-        predicted_class = np.argmax(predictions)
-        class_labels = {0: "Introvert", 1: "Ambivert", 2: "Extrovert"}
-        personality = class_labels[predicted_class]
-        confidence = predictions[predicted_class] * 100
+    predicted_class = np.argmax(predictions)
+    class_labels = {0: "Introvert", 1: "Ambivert", 2: "Extrovert"}
+    personality = class_labels[predicted_class]
+    confidence = predictions[predicted_class] * 100
 
-        # Display Results
-        st.markdown('<div class="results-container">', unsafe_allow_html=True)
-        st.markdown(
-            f'<div class="prediction-result">You are most likely:<br><strong>{personality}</strong></div>',
-            unsafe_allow_html=True
-        )
-        st.markdown(
-            f'<div class="confidence-score">Confidence: {confidence:.2f}%</div>',
-            unsafe_allow_html=True
-        )
+    # Display Results
+    st.markdown('<div class="results-container">', unsafe_allow_html=True)
+    st.markdown(
+        f'<div class="prediction-result">You are most likely:<br><strong>{personality}</strong></div>',
+        unsafe_allow_html=True
+    )
+    st.markdown(
+        f'<div class="confidence-score">Confidence: {confidence:.2f}%</div>',
+        unsafe_allow_html=True
+    )
 
-        # Donut Chart for Probability Distribution
-        fig = go.Figure(data=[go.Pie(
-            labels=list(class_labels.values()),
-            values=predictions * 100,
-            hole=.5,
-            marker_colors=['#FF9800', '#2196F3', '#4CAF50']
-        )])
-        fig.update_layout(
-            title="Personality Type Probability Distribution",
-            height=300,
-            showlegend=True,
-            margin=dict(l=20, r=20, t=40, b=20)
-        )
-        st.plotly_chart(fig, use_container_width=True)
-        st.markdown('</div>', unsafe_allow_html=True)
-    except Exception as e:
-        st.error(f"An error occurred while loading the model: {e}")
+    # Donut Chart for Probability Distribution
+    fig = go.Figure(data=[go.Pie(
+        labels=list(class_labels.values()),
+        values=predictions * 100,
+        hole=.5,
+        marker_colors=['#FF9800', '#2196F3', '#4CAF50']
+    )])
+    fig.update_layout(
+        title="Personality Type Probability Distribution",
+        height=300,
+        showlegend=True,
+        margin=dict(l=20, r=20, t=40, b=20)
+    )
+    st.plotly_chart(fig, use_container_width=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
 # Additional Information Section
 st.markdown("""
